@@ -33,8 +33,9 @@
 #define MAX_VOLUME  255
 #define DEFAULT_VOLUME  MAX_VOLUME
 
-#define NOTE_PINMODE_DIGITAL    0
+#define NOTE_PINMODE_DIGITAL   0
 #define NOTE_PINMODE_ANALOG    1
+#define NOTE_PINMODE_MIDI      2
 
 void ancInitialize(int initialMode);
 void ancUpdate();
@@ -44,6 +45,7 @@ void ancRelease();
 void ancSetOutputMode(int m);
 int ancGetOutputMode();
 void ancAssignChannelToPin(int channel, int pin);
+void ancAssignChannelToMIDI(int channel, int midi_channel);
 void ancAssignModeToChannel(int channel, int cm);
 int ancIsNoteOn(int channel);
 

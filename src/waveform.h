@@ -1,12 +1,11 @@
 /*
-* notepitch.h - Header file.  Helper functions that understand frequencies.
-*                    To work with note IDs (e.g. C4, see noteplay.h)
+* waveform.h - Header file.  Basic handling for arbitrary waveforms
 *                    Part of the 'Armstrong' Music System.
 *
-* Version 1.0
+* Version 1.3
 *
 *  AUTHOR: Steven Goodwin (StevenGoodwin@gmail.com)
-*          Copyright 2008, Steven Goodwin
+*          Copyright 2014, Steven Goodwin
 *
 *  This program is free software; you can redistribute it and/or
 *  modify it under the terms of the GNU General Public License as
@@ -21,12 +20,24 @@
 *  along with this program; if not, write to the Free Software
 *  Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 */
-#ifndef ARMSTRONG_NOTEPITCH_H
-#define ARMSTRONG_NOTEPITCH_H
 
-float anfGetNotePitch(int note);
-float anfQuantizePitch(float iFrequency);
-int   anfQuantizeNote(int iNote, int iKey);
-int anfGetPitchAsNote(float pitch);
+#ifndef ARMSTRONG_WAVEFORM_H
+#define ARMSTRONG_WAVEFORM_H
+
+// System
+void awfInitialize();
+void awfRelease();
+
+// Waveform generation
+void awfFadeSample8(tBYTE *pWave, const int length, const int fadeAmount);
+void awfImportSample8(tBYTE *pWave, const int length, const tBYTE *pData, const int lengthData);
+void awfGenerateNoise8(tBYTE *pWave, const int length);
+void awfGenerate8(tBYTE *pWave, const int length, const float *pHarmonics, const int numHarmonics);
+
+// Playback
+void awfPlaySample8(const tBYTE *pWave, const int length);
+void awfStop();
+
+void awfTrace8(const tBYTE *pWave, const int length);
 
 #endif
