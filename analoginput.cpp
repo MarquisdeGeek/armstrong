@@ -31,7 +31,7 @@
 *  Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 */
 
-#include "analoginput.h"
+#include "armstrong.h"
 
 #define DEVICE_TYPE_SCALE	0
 #define DEVICE_TYPE_PIEZO	1

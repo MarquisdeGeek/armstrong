@@ -5,7 +5,7 @@
 #define CHANNEL_OUTPUT_PIEZO_SPEAKER	 0
 #define EXAMPLE_LOGGING                  0
 
-int piezoPin = 8;
+int pinPiezo = 8;
 int pinReset = 2;
 int pinForce = 7;  // output set to high, to pull up pinReset
 
@@ -83,7 +83,7 @@ void exampleEnds() {
 
 // 0 - standard tone
 void ex0() {
-   //tone(piezoPin, 262, 750);  // C3 - removed for demo because I want to demonstrate the waveform library, that requires the interutps
+   //tone(pinPiezo, 262, 750);  // C3 - removed for demo because I want to demonstrate the waveform library, that requires the interutps
    ex1();
 }
 
@@ -184,7 +184,7 @@ void setup() {
   
   ancInitialize(OUTPUT_LOCAL);
 
-  ancAssignChannelToPin(CHANNEL_OUTPUT_PIEZO_SPEAKER, piezoPin);
+  ancAssignChannelToPin(CHANNEL_OUTPUT_PIEZO_SPEAKER, pinPiezo);
 
   ampPlayString(CHANNEL_OUTPUT_PIEZO_SPEAKER, "O3cO4c");
 

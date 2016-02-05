@@ -1,0 +1,92 @@
+#######################################
+# Syntax Coloring Map For SeeedTft2.0
+#######################################
+
+#######################################
+# Datatypes (KEYWORD1)
+#######################################
+tBYTE	KEYWORD1
+
+#######################################
+# Methods and Functions (KEYWORD2)
+#######################################
+armInitialize	KEYWORD2
+armUpdate	KEYWORD2
+
+aaiInitialize	KEYWORD2
+aaiUpdate	KEYWORD2
+aaiGetState	KEYWORD2
+aaiDidStateChange	KEYWORD2
+aaiIsNoteOff	KEYWORD2
+aaiSetInputScale	KEYWORD2
+aaiSetOutputScale	KEYWORD2
+aaiInitializeScalar	KEYWORD2
+aaiUpdateScalar	KEYWORD2
+aaiInitializePiezoTrigger	KEYWORD2
+aaiUpdatePiezoTrigger	KEYWORD2
+
+adiInitialize	KEYWORD2
+adiUpdate	KEYWORD2
+adiUpdateDevice	KEYWORD2
+adiRelease	KEYWORD2
+adiGetState	KEYWORD2
+adiDidStateChange	KEYWORD2
+adiInitializeToggleButton	KEYWORD2
+adiInitializePushButton	KEYWORD2
+
+ancInitialize	KEYWORD2
+ancUpdate	KEYWORD2
+ancUpdateChannel	KEYWORD2
+ancRelease	KEYWORD2
+ancSetOutputMode	KEYWORD2
+ancGetOutputMode	KEYWORD2
+ancAssignChannelToPin	KEYWORD2
+ancAssignChannelToMIDI	KEYWORD2
+ancAssignModeToChannel	KEYWORD2
+ancIsNoteOn	KEYWORD2
+ancNoteOn	KEYWORD2
+ancNoteChangePitch	KEYWORD2
+ancNoteChangeVolume	KEYWORD2
+ancNoteOff	KEYWORD2
+
+ahwGetTimingPeriod	KEYWORD2
+ampPlayString	KEYWORD2
+anfGetNotePitch	KEYWORD2
+anfQuantizePitch	KEYWORD2
+anfQuantizeNote	KEYWORD2
+anfGetPitchAsNote	KEYWORD2
+anpSetTempo	KEYWORD2
+anpGetTempo	KEYWORD2
+anpPlayNote	KEYWORD2
+anpStopNote	KEYWORD2
+anpPlayNoteFor	KEYWORD2
+anpPlayRestFor	KEYWORD2
+
+
+
+#######################################
+# Constants (LITERAL1)
+#######################################
+MAX_ANALOG_INPUTS	LITERAL1
+MAX_DIGITAL_INPUTS	LITERAL1
+OUTPUT_LOCAL	LITERAL1
+OUTPUT_SERIAL	LITERAL1
+OUTPUT_MIDI	LITERAL1
+MAX_CHANNELS	LITERAL1
+MAX_VOLUME	LITERAL1
+DEFAULT_VOLUME	LITERAL1
+NOTE_PINMODE_DIGITAL	LITERAL1
+NOTE_PINMODE_ANALOG	LITERAL1
+NOTE_PINMODE_MIDI	LITERAL1
+MIDI_NOTE_C0	LITERAL1
+MIDI_NOTE_C1	LITERAL1
+MIDI_NOTE_C2	LITERAL1
+MIDI_NOTE_C3	LITERAL1
+MIDI_NOTE_C4	LITERAL1
+MIDI_NOTE_C5	LITERAL1
+MIDI_NOTE_C6	LITERAL1
+MIDI_NOTE_C7	LITERAL1
+MIDI_NOTE_C8	LITERAL1
+MIDI_NOTE_C9	LITERAL1
+MIDI_NOTE_C10	LITERAL1
+

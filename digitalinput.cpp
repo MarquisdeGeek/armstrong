@@ -10,7 +10,7 @@
 *                      the 'up' or 'down' motion without extra code.
 *                    Part of the 'Armstrong' Music System.
 *
-* Version 1.0
+* Version 1.1
 *
 *  AUTHOR: Steven Goodwin (StevenGoodwin@gmail.com)
 *          Copyright 2008, Steven Goodwin
@@ -28,7 +28,7 @@
 *  along with this program; if not, write to the Free Software
 *  Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 */
-#include "digitalinput.h"
+#include "armstrong.h"
 
 #define DIGITAL_TYPE_TOGGLE	0
 #define DIGITAL_TYPE_PUSH	1
@@ -44,8 +44,8 @@ struct {
 
 } digitalDevice[MAX_DIGITAL_INPUTS];
 
-static int updateToggle(int device);
-static int updatePushButton(int device) ;
+int updateToggle(int device);
+int updatePushButton(int device) ;
 
 void adiInitialize() {
 	for(int device=0;device<MAX_DIGITAL_INPUTS;++device) {

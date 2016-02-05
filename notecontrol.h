@@ -26,7 +26,7 @@
 
 #define OUTPUT_LOCAL	1
 #define OUTPUT_SERIAL	2
-#define OUTPUT_MIDI	4
+#define OUTPUT_MIDI		4
 
 #define MAX_CHANNELS	16
 
@@ -37,7 +37,7 @@
 #define NOTE_PINMODE_ANALOG    1
 #define NOTE_PINMODE_MIDI      2
 
-void ancInitialize(int initialMode);
+void ancInitialize(int initialMode = OUTPUT_LOCAL);
 void ancUpdate();
 void ancUpdateChannel(int channel);
 void ancRelease();

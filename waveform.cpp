@@ -21,6 +21,7 @@
 *  Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 */
 #include <avr/interrupt.h>
+#include "armstrong.h"
 #include "waveform.h"
 
 const float PI2 = 6.28318530718f;

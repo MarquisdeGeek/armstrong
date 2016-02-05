@@ -21,9 +21,7 @@
 *  along with this program; if not, write to the Free Software
 *  Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 */
-
-#include "noteplay.h"
-#include "musicplay.h"
+#include "armstrong.h"
 
 static int scaleOffset[] = { 9, 11, 0, 2, 4, 5, 7,  };  // starts at A
 
