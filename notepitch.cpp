@@ -66,7 +66,7 @@ float anfGetNotePitch(int iNote) {
 
 
 int anfGetPitchAsNote(float pitch) {
-  int note = 12*log(pitch/440)/log(2);
+  int note = round(12.0*log(pitch/440.0)/log(2.0));
   return note;
 }
 

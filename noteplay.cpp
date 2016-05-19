@@ -43,11 +43,13 @@ void anpPlayNote(int iChannel, int iNote, int volume) {
 	ancNoteOn(iChannel, anfGetNotePitch(iNote), volume);
 }
 
-void anpStopNote(int iChannel) {
-	ancNoteOff(iChannel);
+void anpStopNote(int iChannel, int iNote) {
+	ancNoteOff(iChannel, anfGetNotePitch(iNote));
 }
 
 void anpPlayNoteFor(int iChannel, int iNote, int iDuration, int volume) {
+	extern int g_iOutputMode;
+
 	int freq = anfGetNotePitch(iNote);
 	ancNoteOn(iChannel, freq, volume);
 	long period = ((long)iDuration * crochetPeriod) / 384;
@@ -55,7 +57,12 @@ void anpPlayNoteFor(int iChannel, int iNote, int iDuration, int volume) {
 	for(int i=0;i<cycles;++i) {
 		ancUpdateChannel(iChannel);
 	}
-	ancNoteOff(iChannel);
+
+ 	if (g_iOutputMode & OUTPUT_MIDI) {
+ 		delay(period);
+	}
+
+	ancNoteOff(iChannel, freq);
 }
 
 void anpPlayRestFor(int iChannel, int iDuration) {

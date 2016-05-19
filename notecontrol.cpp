@@ -33,7 +33,8 @@ void sendMessage(int channel, char *command);
 void midiOut(int midi_channel, int message, int pitch, int velocity);
 
 struct {
-	int freq;
+	int frequency;
+	int period;
 	int volume;
 	int mute;
 	int mode;
@@ -42,7 +43,7 @@ struct {
 	int midi_channel;
 	//
 	int lastVolumeSent;
-	int lastFrequencySent;
+	int lastPeriodSent;
 } noteInfo[MAX_CHANNELS];
 
 // MIDI messages
@@ -52,25 +53,30 @@ struct {
 void ancInitialize(int initialMode) {
 	int i;
 	for(i=0;i<MAX_CHANNELS;++i) {
-		noteInfo[i].freq = -1;
-		noteInfo[i].lastVolumeSent = noteInfo[i].lastFrequencySent = -1;
+		noteInfo[i].frequency = -1;
+		noteInfo[i].period = -1;
+		noteInfo[i].lastVolumeSent = noteInfo[i].lastPeriodSent = -1;
 		noteInfo[i].mute = 0;
 		noteInfo[i].volume = HIGH;
 		noteInfo[i].mode = NOTE_PINMODE_DIGITAL;
 		noteInfo[i].pinAssignment = -1;
+		// MIDI only
+		noteInfo[i].midi_channel = i & 0xf;
 	}
 	lastChannelSent = -1;
 	g_iOutputMode |= initialMode;  // by or'ing them, we can re-init, without problems
-      //
-      if (g_iOutputMode & OUTPUT_MIDI) {
-        Serial.begin(31250);
-      }
+	//
+	if (g_iOutputMode & OUTPUT_MIDI) {
+		Serial.begin(31250);
+	} else if (g_iOutputMode & OUTPUT_SERIAL) {
+		Serial.begin(57600);
+	}
 }
 
 void ancRelease() {
 	int i;
 	for(i=0;i<MAX_CHANNELS;++i) {
-		ancNoteOff(i);
+		ancNoteOff(i, noteInfo[i].frequency);
 	}
 }
 
@@ -93,7 +99,7 @@ void ancAssignChannelToMIDI(int channel, int midi_channel) {
 }
 
 int ancIsNoteOn(int channel) {
-	if (noteInfo[channel].freq == -1) {
+	if (noteInfo[channel].frequency == -1) {
 		return 0;
 	} else {
 		return 1;
@@ -108,54 +114,62 @@ void ancNoteOn(int channel, int pitch, int volume) {
 	int period = ahwGetTimingPeriod(pitch);
 
 	// Don't bother process the 'off' and 'on' if it's the same note
-	if (period == noteInfo[channel].freq) {
+	if (period == noteInfo[channel].period && volume == noteInfo[channel].lastVolumeSent) {
 		return;
 	}
 
-	if (noteInfo[channel].freq != -1) {
-		ancNoteOff(channel);
+	if (noteInfo[channel].frequency != -1 && noteInfo[channel].mode != NOTE_PINMODE_MIDI) {
+		ancNoteOff(channel, noteInfo[channel].frequency);
 	}
 
-	noteInfo[channel].freq = period;
-	noteInfo[channel].lastFrequencySent = period;
+	noteInfo[channel].frequency = pitch;
+	noteInfo[channel].period = period;
+	noteInfo[channel].lastPeriodSent = period;
 	noteInfo[channel].lastVolumeSent = volume;
 
-        if (noteInfo[channel].mode == NOTE_PINMODE_MIDI) {
-            // Volume is 0-MAX_VOLUME, i.e. 255, whereas MIDI velocity is 0-127, so we divide by 2
-            midiOut(noteInfo[channel].midi_channel, MIDI_NOTE_ON, period, volume/2);
-        }
+	if (noteInfo[channel].mode == NOTE_PINMODE_MIDI) {
+		// Volume is 0-MAX_VOLUME, i.e. 255, whereas MIDI velocity is 0-127, so we divide by 2
+		midiOut(noteInfo[channel].midi_channel, MIDI_NOTE_ON, pitch, volume/2);
+	}
 
 	sendValue(channel, '#', pitch);
 }
 
 void ancNoteChangePitch(int channel, int newPitch) {
-	if (noteInfo[channel].freq != -1) {
+	if (noteInfo[channel].period != -1) {
 		int newPeriod = ahwGetTimingPeriod(newPitch);
 
-		if (noteInfo[channel].freq != newPeriod) {  
-			noteInfo[channel].freq = newPeriod;
-			noteInfo[channel].lastFrequencySent = newPeriod;
+		if (noteInfo[channel].period != newPeriod) {  
+			noteInfo[channel].period = newPeriod;
+			noteInfo[channel].lastPeriodSent = newPeriod;
 			sendValue(channel, '$', newPitch);
 		}
 	}
 } 
 
 void ancNoteChangeVolume(int channel, int newVolume)  {
-	if (noteInfo[channel].freq != -1 && noteInfo[channel].volume != newVolume) {
+//::Serial.print("new volume");  ::Serial.print("    ");
+//::Serial.print(newVolume);  ::Serial.print("    ");
+
+	if (noteInfo[channel].frequency != -1 && noteInfo[channel].volume != newVolume) {
 		noteInfo[channel].volume = newVolume;
 		noteInfo[channel].lastVolumeSent = newVolume;
 		sendValue(channel, '^', newVolume);
 	}
 }
 
-void ancNoteOff(int channel) {
-	if (noteInfo[channel].freq != -1) {
-                if (noteInfo[channel].mode == NOTE_PINMODE_MIDI) {
-                  midiOut(noteInfo[channel].midi_channel, MIDI_NOTE_OFF, 0, 0);
-                }
+void ancNoteOff(int channel, int pitch) {
+	if (pitch == -1) {
+		pitch = noteInfo[channel].frequency;
+	}
+
+	if (pitch != -1) {
+	    if (noteInfo[channel].mode == NOTE_PINMODE_MIDI) {
+	      midiOut(noteInfo[channel].midi_channel, MIDI_NOTE_OFF, pitch, 0);
+	    }
 
 		sendMessage(channel, "!");
-		noteInfo[channel].freq = -1;
+		noteInfo[channel].frequency = noteInfo[channel].period = -1;
 	}
 }
 
@@ -168,7 +182,8 @@ void ancUpdate() {
 }
 
 void ancAssignModeToChannel(int channel, int cm) {
-	switch(channel) {
+	int pin = noteInfo[channel].pinAssignment;
+	switch(pin) {
 		// Newer Arduinos only (i.e. non-ATmega8)
 	case 3:
 	case 5:
@@ -191,34 +206,37 @@ void ancAssignModeToChannel(int channel, int cm) {
 void ancUpdateChannel(int channel) {
   	if (g_iOutputMode & OUTPUT_LOCAL) {
 
-		if (noteInfo[channel].freq != -1) {
+		if (noteInfo[channel].period != -1) {
 			int vol = noteInfo[channel].volume;
 
 			switch(noteInfo[channel].mode) {
 				case NOTE_PINMODE_DIGITAL:
 					vol = vol==0?0:HIGH;
 					digitalWrite(noteInfo[channel].pinAssignment, vol); 
-					delayMicroseconds(noteInfo[channel].freq);
+					delayMicroseconds(noteInfo[channel].period);
 					digitalWrite(noteInfo[channel].pinAssignment, LOW); 
-					delayMicroseconds(noteInfo[channel].freq - 1);     // - 1 to make up for digitaWrite overhead
+					delayMicroseconds(noteInfo[channel].period - 1);     // - 1 to make up for digitaWrite overhead
 					break;
 				case NOTE_PINMODE_ANALOG:
 					vol = (vol > MAX_VOLUME) ? MAX_VOLUME : vol;
+					//::Serial.println(vol);
 					analogWrite(noteInfo[channel].pinAssignment, vol); 
-					delayMicroseconds(noteInfo[channel].freq);
+					delayMicroseconds(noteInfo[channel].period);
 					analogWrite(noteInfo[channel].pinAssignment, LOW); 
-					delayMicroseconds(noteInfo[channel].freq - 1);     // - 1 to make up for digitaWrite overhead
+					delayMicroseconds(noteInfo[channel].period - 1);     // - 1 to make up for digitaWrite overhead
 					break;
 			}
 		}
 	}
+
 }
 
 void midiOut(int midi_channel, int message, int pitch, int velocity) {
+
   if (g_iOutputMode & OUTPUT_MIDI) {
-    int key = 69 + anfGetPitchAsNote(pitch);
+    int key = 45 + anfGetPitchAsNote(pitch);
     int status_byte = message | midi_channel;
-  
+
     Serial.write(status_byte);
     Serial.write(key);
     Serial.write(velocity);

@@ -52,6 +52,6 @@ int ancIsNoteOn(int channel);
 void ancNoteOn(int channel, int pitch, int volume);
 void ancNoteChangePitch(int channel, int newPitch);
 void ancNoteChangeVolume(int channel, int newVolume);
-void ancNoteOff(int channel);
+void ancNoteOff(int channel, int pitch = -1);
 
 #endif

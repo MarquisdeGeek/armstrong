@@ -113,7 +113,7 @@ void anpSetTempo(int t);
 int anpGetTempo();
 
 void anpPlayNote(int iChannel, int iNote, int volume);
-void anpStopNote(int iChannel);
+void anpStopNote(int iChannel, int iNote = -1);
 	
 void anpPlayNoteFor(int iChannel, int iNote, int iDuration, int volume);
 void anpPlayRestFor(int iChannel, int iDuration);
