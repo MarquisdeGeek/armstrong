@@ -49,7 +49,7 @@ ancNoteChangePitch	KEYWORD2
 ancNoteChangeVolume	KEYWORD2
 ancNoteOff	KEYWORD2
 
-ahwGetTimingPeriod	KEYWORD2
+\ahwGetTimingPeriod	KEYWORD2
 ampPlayString	KEYWORD2
 anfGetNotePitch	KEYWORD2
 anfQuantizePitch	KEYWORD2

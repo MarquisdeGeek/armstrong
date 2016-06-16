@@ -49,10 +49,10 @@ gap between sounds, caused by getPoint()
 #define XP 8 
 
 // Calibrate values
-const short TS_MINX=116;
-const short TS_MINY=113;
-const short TS_MAXX=849;
-const short TS_MAXY=872;
+#define TS_MINX  100
+#define TS_MINY  100
+#define TS_MAXX  832
+#define TS_MAXY  832
 
 // For better pressure precision, we need to know the resistance
 // between X+ and X- Use any multimeter to read it

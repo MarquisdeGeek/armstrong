@@ -29,11 +29,12 @@
 
 void adiInitialize();
 void adiUpdate();
-int adiUpdateDevice(int device);
 void adiRelease();
 
-int adiGetState(int device);
-int adiDidStateChange(int device);
+bool adiGetState(int device);
+bool adiDidStateChange(int device);
+bool adiIsPressed(int device);
+bool adiIsReleased(int device);
 
 void adiInitializeToggleButton(int device, int pin);
 void adiInitializePushButton(int device, int pin);

@@ -43,12 +43,10 @@ void setup() {
 void loop(){
 	adiUpdate();
 
-	if (adiDidStateChange(chlInputButton)) {
-   		if (ancIsNoteOn(chlInputButton)) {
-			ancNoteOff(chlOutputSpeaker);
-		} else {
-			ancNoteOn(chlOutputSpeaker, anfGetNotePitch(MIDI_NOTE_C3), DEFAULT_VOLUME);
-		}
+	if (adiIsPressed(chlInputButton)) {
+		ancNoteOn(chlOutputSpeaker, anfGetNotePitch(MIDI_NOTE_C3), DEFAULT_VOLUME);
+	} else if (adiIsPressed(chlInputButton)) {
+   		ancNoteOff(chlOutputSpeaker);
 	}
 
 	ancUpdate();

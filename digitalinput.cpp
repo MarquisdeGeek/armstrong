@@ -8,6 +8,8 @@
 *                      The biggest benefit of using this abstraction is to
 *                      simplify the state logic, as you can easily watch for
 *                      the 'up' or 'down' motion without extra code.
+*                    Buttons are intended to be pulled low when open, and shorted
+*                    to high when pressed.
 *                    Part of the 'Armstrong' Music System.
 *
 * Version 1.1
@@ -35,17 +37,18 @@
 
 
 struct {
-	int type;
-	int state;
-	int info;
-	int stateChanged;
+	bool type;
+	bool state;
+	bool info;
+	bool stateChanged;
 	//
 	int pinAssignment;
 
 } digitalDevice[MAX_DIGITAL_INPUTS];
 
-int updateToggle(int device);
-int updatePushButton(int device) ;
+bool adiUpdateDevice(int device);
+bool updateToggle(int device);
+bool updatePushButton(int device);
 
 void adiInitialize() {
 	for(int device=0;device<MAX_DIGITAL_INPUTS;++device) {
@@ -63,7 +66,7 @@ void adiUpdate() {
 }
 
 
-int adiUpdateDevice(int device) {
+bool adiUpdateDevice(int device) {
 
 	if (digitalDevice[device].pinAssignment != -1) {
 		switch(digitalDevice[device].type) {
@@ -76,15 +79,23 @@ int adiUpdateDevice(int device) {
 		}
 	}
 
-	return 0;
+	return false;
 }
 
-int adiGetState(int device) {
+bool adiGetState(int device) {
 	return digitalDevice[device].state;
 }
 
-int adiDidStateChange(int device) {
+bool adiDidStateChange(int device) {
 	return digitalDevice[device].stateChanged;
+}
+
+bool adiIsPressed(int device) {
+	return adiDidStateChange(device) && adiGetState(device);
+}
+
+bool adiIsReleased(int device) {
+	return adiDidStateChange(device) && !adiGetState(device);
 }
 
 /*
@@ -93,31 +104,30 @@ int adiDidStateChange(int device) {
 void adiInitializeToggleButton(int device, int pin) {
 	pinMode(pin, INPUT);
 
-	digitalDevice[device].state = 0;
-	digitalDevice[device].info = 0;
+	digitalDevice[device].state = false;
+	digitalDevice[device].info = false;
 
 	digitalDevice[device].type = DIGITAL_TYPE_TOGGLE;
 	digitalDevice[device].pinAssignment = pin;
 }
 
-int updateToggle(int device) {
-        digitalDevice[device].stateChanged = 0;
+bool updateToggle(int device) {
+
 	if (digitalRead(digitalDevice[device].pinAssignment) != HIGH) {
 		// button pressed
-		if (digitalDevice[device].info == 0) {
-			digitalDevice[device].state ^= 1;
-			digitalDevice[device].info = 1;
-                        digitalDevice[device].stateChanged = 1;
-			return 1;
+		if (!digitalDevice[device].info) {
+			digitalDevice[device].state = !digitalDevice[device].state;
+			digitalDevice[device].info = true;
+			return true;
 		}
 	} else {
 		// button not pressed
-		if (digitalDevice[device].info == 1) {
-			digitalDevice[device].info = 0;
+		if (digitalDevice[device].info) {
+			digitalDevice[device].info = false;
 		}
 	}
 
-	return 0;
+	return false;
 }
 
 
@@ -127,27 +137,26 @@ int updateToggle(int device) {
 void adiInitializePushButton(int device, int pin) {
 	pinMode(pin, INPUT);
 
-	digitalDevice[device].state = 0;
-	digitalDevice[device].info = 0;
+	digitalDevice[device].state = false;
+	digitalDevice[device].info = false;		// means 'last state' in this instance
 
 	digitalDevice[device].type = DIGITAL_TYPE_PUSH;
 	digitalDevice[device].pinAssignment = pin;
 }
 
-int updatePushButton(int device) {
+bool updatePushButton(int device) {
 	int val = digitalRead(digitalDevice[device].pinAssignment);
 	int changed = 0;
   
 	if (val == HIGH && digitalDevice[device].info == LOW) {
-		digitalDevice[device].state = 0;
-		changed = 1;
+		digitalDevice[device].state = true;
+		changed = true;
 	} else if (val == LOW && digitalDevice[device].info == HIGH) {
-		digitalDevice[device].state = 1;
-		changed = 1;
+		digitalDevice[device].state = false;
+		changed = true;
 	}
 
 	digitalDevice[device].info = val;
-        digitalDevice[device].stateChanged = changed;
 
 	return changed;
 }
